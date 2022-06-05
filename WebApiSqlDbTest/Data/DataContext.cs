@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClassLib;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApiSqlDbTest.Data
 {
     public class DataContext : DbContext
     {
-        public DbSet<ClassLib.Target> Targets { get; set; } = default!;
+        public DbSet<Target> Targets { get; set; } = default!;
+
+        public DbSet<User> Users { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -12,7 +15,9 @@ namespace WebApiSqlDbTest.Data
             optionsBuilder.UseSqlite("Data Source=Data/test.db");
 
             //dotnet ef migrations add CreateInitial
+            // Add-Migration InitialCreate
             //dotnet ef database update
+            // Update-Database
 
         }
     }
