@@ -15,5 +15,7 @@ namespace ClassLib
         public bool IsActive { get; set; } = true;
 
         public List<Target>? OwnedTargets { get; set; } = null;
+        public List<Target>? ModifiedTargets { get; set; } = null;
+        public List<Target>? AccessedTargets { get; set; } = null;
     }
 }

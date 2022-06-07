@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApiSqlDbTest.Data;
 
@@ -10,9 +11,10 @@ using WebApiSqlDbTest.Data;
 namespace WebApiSqlDbTest.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220607160311_UserAddedColumns")]
+    partial class UserAddedColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -23,17 +25,11 @@ namespace WebApiSqlDbTest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("AccessedDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StrTags")
@@ -44,22 +40,12 @@ namespace WebApiSqlDbTest.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserAccessedId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserModifiedId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserOwnerId")
+                    b.Property<int>("UserOwnerUserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("TargetId");
 
-                    b.HasIndex("UserAccessedId");
-
-                    b.HasIndex("UserModifiedId");
-
-                    b.HasIndex("UserOwnerId");
+                    b.HasIndex("UserOwnerUserId");
 
                     b.ToTable("Targets");
                 });
@@ -96,37 +82,17 @@ namespace WebApiSqlDbTest.Migrations
 
             modelBuilder.Entity("ClassLib.Target", b =>
                 {
-                    b.HasOne("ClassLib.User", "UserAccessed")
-                        .WithMany("AccessedTargets")
-                        .HasForeignKey("UserAccessedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassLib.User", "UserModified")
-                        .WithMany("ModifiedTargets")
-                        .HasForeignKey("UserModifiedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ClassLib.User", "UserOwner")
                         .WithMany("OwnedTargets")
-                        .HasForeignKey("UserOwnerId")
+                        .HasForeignKey("UserOwnerUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("UserAccessed");
-
-                    b.Navigation("UserModified");
 
                     b.Navigation("UserOwner");
                 });
 
             modelBuilder.Entity("ClassLib.User", b =>
                 {
-                    b.Navigation("AccessedTargets");
-
-                    b.Navigation("ModifiedTargets");
-
                     b.Navigation("OwnedTargets");
                 });
 #pragma warning restore 612, 618

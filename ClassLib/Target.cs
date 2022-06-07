@@ -8,41 +8,65 @@ namespace ClassLib
     /// </summary>
     public class Target
     {
+        [Key]
         public int TargetId { get; set; }
 
         /// <summary>Naslov dokumenta ili naslov/kratak opis linka/fajla/foldera.</summary>
-        public string Title { get; set; } = default!;
+        public string Title { get; set; }
 
         /// <summary>Adresa linka/fajla/foldera ili tekst dokumenta.</summary>
-        public string Text { get; set; } = default!;
+        public string Content { get; set; }
 
-        private string tags = default!;
         [Required]
-        //[MaxLength(100)]
-        /// <summary>Tagovi za pretragu ovog target-a.</summary>
+        /// <summary>Tagovi za pretragu ovog target-a spakovani u string.</summary>
         /// <example>raf, tagged-world, projekat, c#, web-api</example>
-        public string Tags
-        {
-            get => tags;
-            set => tags = value; //TODO validacija datog stringa (tagova)
-        }
+        public string StrTags { get; set; }
+        //TODO validacija datog stringa (tagova)
+
+        [NotMapped]
+        public List<string> Tags { get; set; }
 
         public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public DateTime AccessedDate { get; set; }
 
-        public User Owner { get; set; } = default!;
+        //[NotMapped]
+        public User UserOwner { get; set; }
+        [ForeignKey(nameof(UserOwner))]
+        public int UserOwnerId { get; set; }
 
-        [Timestamp]
-        public byte[] TStamp { get; set; } = default!;
+        //[NotMapped]
+        public User UserModified { get; set; }
+        [ForeignKey(nameof(UserModified))]
+        public int UserModifiedId { get; set; }
+
+        //[NotMapped]
+        public User UserAccessed { get; set; }
+        [ForeignKey(nameof(UserAccessed))]
+        public int UserAccessedId { get; set; }
 
         /// <summary>Inicijalni target koji se automatski dodaje kao primer za svakog korisnika.</summary>
-        public static Target InitTarget(User owner)
-            => new()
+        public static Target InitTarget(User creator)
+            => CreateTarget("Tagged World GitHub page"
+                , "https://github.com/bvujovic/TaggedWorld"
+                , "raf, tagged-world, project, c#, web-api"
+                , new DateTime(2022, 06, 01), creator);
+
+        public static Target CreateTarget(string title, string content, string strTags
+            , DateTime dateTime, User creator)
+        {
+            return new Target()
             {
-                Title = "Tagged World GitHub page",
-                Text = "https://github.com/bvujovic/TaggedWorld",
-                Tags = "raf, tagged-world, project, c#, web-api",
-                CreatedDate = new DateTime(2022, 06, 01),
-                Owner = owner
+                Title = title,
+                Content = content,
+                StrTags = strTags,
+                CreatedDate = dateTime,
+                ModifiedDate = dateTime,
+                AccessedDate = dateTime,
+                UserOwner = creator,
+                UserModified = creator,
+                UserAccessed = creator,
             };
+        }
     }
 }

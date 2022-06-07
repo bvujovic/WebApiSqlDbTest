@@ -18,7 +18,15 @@ namespace WebApiSqlDbTest.Data
             // Add-Migration InitialCreate
             //dotnet ef database update
             // Update-Database
+        }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<User>().HasMany(u => u.OwnedTargets).WithOne(t => t.UserOwner);
+            builder.Entity<User>().HasMany(u => u.ModifiedTargets).WithOne(t => t.UserModified);
+            builder.Entity<User>().HasMany(u => u.AccessedTargets).WithOne(t => t.UserAccessed);
         }
     }
 }
