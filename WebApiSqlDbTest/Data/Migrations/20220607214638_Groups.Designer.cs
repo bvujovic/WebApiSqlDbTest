@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApiSqlDbTest.Data;
 
@@ -10,9 +11,10 @@ using WebApiSqlDbTest.Data;
 namespace WebApiSqlDbTest.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220607214638_Groups")]
+    partial class Groups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -59,24 +61,6 @@ namespace WebApiSqlDbTest.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("Member");
-                });
-
-            modelBuilder.Entity("ClassLib.Sharing", b =>
-                {
-                    b.Property<int>("TargetId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("SharedDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TargetId", "GroupId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("Sharing");
                 });
 
             modelBuilder.Entity("ClassLib.Target", b =>
@@ -173,25 +157,6 @@ namespace WebApiSqlDbTest.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ClassLib.Sharing", b =>
-                {
-                    b.HasOne("ClassLib.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassLib.Target", "Target")
-                        .WithMany()
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Target");
                 });
 
             modelBuilder.Entity("ClassLib.Target", b =>

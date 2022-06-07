@@ -27,6 +27,10 @@ namespace WebApiSqlDbTest.Data
             builder.Entity<User>().HasMany(u => u.OwnedTargets).WithOne(t => t.UserOwner);
             builder.Entity<User>().HasMany(u => u.ModifiedTargets).WithOne(t => t.UserModified);
             builder.Entity<User>().HasMany(u => u.AccessedTargets).WithOne(t => t.UserAccessed);
+
+            builder.Entity<Member>().HasKey(it => new { it.UserId, it.GroupId });
+
+            builder.Entity<Sharing>().HasKey(s => new { s.TargetId, s.GroupId });
         }
     }
 }

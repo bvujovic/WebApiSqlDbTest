@@ -14,8 +14,13 @@ namespace ClassLib
         public string FullName { get; set; } = default!;
         public bool IsActive { get; set; } = true;
 
+        public List<Member> MemberOf { get; set; }
+
         public List<Target>? OwnedTargets { get; set; } = null;
         public List<Target>? ModifiedTargets { get; set; } = null;
         public List<Target>? AccessedTargets { get; set; } = null;
+
+        public override string ToString()
+            => $"{FullName} ({Username})";
     }
 }

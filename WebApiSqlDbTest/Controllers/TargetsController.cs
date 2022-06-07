@@ -36,28 +36,51 @@ namespace WebApiSqlDbTest.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(TargetDto t)
+        public IActionResult Post(Target t)
         {
             try
             {
-                var owner = ctx.Users.Find(t.OwnerId);
+                var owner = ctx.Users.Find(t.UserOwnerId);
                 if (owner != null)
                 {
-                    var newTarget = Target.CreateTarget(t.Title, t.Text, t.Tags
-                        , DateTime.Now, owner);
-                    
+                    var newTarget = Target.CreateTarget(t.Title, t.Content
+                        , string.Join(", ", t.Tags), DateTime.Now, owner);
                     ctx.Targets.Add(newTarget);
                     ctx.SaveChanges();
                     return Ok();
                 }
                 else
-                    return BadRequest($"User with Id {t.OwnerId} doesn't exists.");
+                    return BadRequest($"User with Id {t.UserOwnerId} doesn't exists.");
             }
             catch (Exception ex)
             {
                 return this.Bad(ex);
             }
         }
+
+        //[HttpPost]
+        //public IActionResult Post(TargetDto t)
+        //{
+        //    try
+        //    {
+        //        var owner = ctx.Users.Find(t.OwnerId);
+        //        if (owner != null)
+        //        {
+        //            var newTarget = Target.CreateTarget(t.Title, t.Text, t.Tags
+        //                , DateTime.Now, owner);
+
+        //            ctx.Targets.Add(newTarget);
+        //            ctx.SaveChanges();
+        //            return Ok();
+        //        }
+        //        else
+        //            return BadRequest($"User with Id {t.OwnerId} doesn't exists.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return this.Bad(ex);
+        //    }
+        //}
 
         [HttpDelete]
         public IActionResult Clear()

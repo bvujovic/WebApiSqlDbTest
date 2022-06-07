@@ -17,7 +17,6 @@ namespace ClassLib
         /// <summary>Adresa linka/fajla/foldera ili tekst dokumenta.</summary>
         public string Content { get; set; }
 
-        [Required]
         /// <summary>Tagovi za pretragu ovog target-a spakovani u string.</summary>
         /// <example>raf, tagged-world, projekat, c#, web-api</example>
         public string StrTags { get; set; }
@@ -44,6 +43,9 @@ namespace ClassLib
         public User UserAccessed { get; set; }
         [ForeignKey(nameof(UserAccessed))]
         public int UserAccessedId { get; set; }
+
+        public override string ToString()
+            => $"{Title}";
 
         /// <summary>Inicijalni target koji se automatski dodaje kao primer za svakog korisnika.</summary>
         public static Target InitTarget(User creator)

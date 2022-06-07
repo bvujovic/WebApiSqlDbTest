@@ -20,9 +20,12 @@ namespace WebApiSqlDbTest.Controllers
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
-            var users = ctx.Users.Include(it => it.OwnedTargets);
+            var users = ctx.Users.Include(it => it.OwnedTargets)
+                .Include(it => it.MemberOf).ThenInclude(it => it.Group);
             foreach (var u in users)
-                u.OwnedTargets.ForEach(it => it.UserAccessed = it.UserOwner = it.UserModified = null);
+                u.OwnedTargets?.ForEach(it => it.UserAccessed = it.UserOwner = it.UserModified = null);
+            foreach (var u in users)
+                u.MemberOf.ForEach(it => { it.User = null; it.Group.Members = null; });
             return Ok(users);
         }
 
