@@ -24,9 +24,9 @@ namespace WebApiSqlDbTest.Controllers
             try
             {
                 var res = ctx.Targets.Include(it => it.UserOwner).ToList();
-                res.First().UserOwner.OwnedTargets = null;
-                res.First().UserOwner.ModifiedTargets = null;
-                res.First().UserOwner.AccessedTargets = null;
+                //res.First().UserOwner.OwnedTargets = null;
+                //res.First().UserOwner.ModifiedTargets = null;
+                //res.First().UserOwner.AccessedTargets = null;
                 return Ok(res);
             }
             catch (Exception ex)
@@ -57,30 +57,6 @@ namespace WebApiSqlDbTest.Controllers
                 return this.Bad(ex);
             }
         }
-
-        //[HttpPost]
-        //public IActionResult Post(TargetDto t)
-        //{
-        //    try
-        //    {
-        //        var owner = ctx.Users.Find(t.OwnerId);
-        //        if (owner != null)
-        //        {
-        //            var newTarget = Target.CreateTarget(t.Title, t.Text, t.Tags
-        //                , DateTime.Now, owner);
-
-        //            ctx.Targets.Add(newTarget);
-        //            ctx.SaveChanges();
-        //            return Ok();
-        //        }
-        //        else
-        //            return BadRequest($"User with Id {t.OwnerId} doesn't exists.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return this.Bad(ex);
-        //    }
-        //}
 
         [HttpDelete]
         public IActionResult Clear()

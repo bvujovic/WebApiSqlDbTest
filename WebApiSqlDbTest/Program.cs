@@ -12,6 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<WebApiSqlDbTest.Data.DataContext>();
 
+/// https://stackoverflow.com/questions/65261654/how-do-you-implement-system-text-json-serialization-referencehandler-preserve-in
+builder.Services.AddMvc().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
@@ -29,8 +35,7 @@ builder.Services.AddSwaggerGen(c =>
     //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     //c.IncludeXmlComments(xmlPath);
     c.CustomOperationIds(apiDesc =>
-        apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null
-        );
+        apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null);
 });
 
 var app = builder.Build();

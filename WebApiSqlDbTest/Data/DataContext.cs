@@ -5,9 +5,11 @@ namespace WebApiSqlDbTest.Data
 {
     public class DataContext : DbContext
     {
-        public DbSet<Target> Targets { get; set; } = default!;
-
         public DbSet<User> Users { get; set; } = default!;
+        public DbSet<Member> Members { get; set; } = default!;
+        public DbSet<Group> Groups { get; set; } = default!;
+        public DbSet<Sharing> Sharings { get; set; } = default!;
+        public DbSet<Target> Targets { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
