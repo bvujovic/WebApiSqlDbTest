@@ -22,10 +22,6 @@ namespace WebApiSqlDbTest.Controllers
         {
             var users = await ctx.Users.Include(it => it.OwnedTargets)
                 .Include(it => it.MemberOf).ThenInclude(it => it.Group).ToListAsync();
-            //foreach (var u in users)
-            //    u.OwnedTargets?.ForEach(it => it.UserAccessed = it.UserOwner = it.UserModified = null);
-            //foreach (var u in users)
-            //    u.MemberOf.ForEach(it => { it.User = null; it.Group.Members = null; });
             return Ok(users);
         }
 
@@ -38,10 +34,7 @@ namespace WebApiSqlDbTest.Controllers
                 ctx.SaveChanges();
                 return Ok();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message + Environment.NewLine + ex.InnerException.Message);
-            }
+            catch (Exception ex) { return this.Bad(ex); }
         }
 
         [HttpPut]
@@ -59,18 +52,7 @@ namespace WebApiSqlDbTest.Controllers
                 ctx.SaveChanges();
                 return Ok();
             }
-            catch (Exception ex)
-            {
-                return this.Bad(ex);
-            }
+            catch (Exception ex) { return this.Bad(ex); }
         }
-
-        //private BadRequestObjectResult Bad(Exception ex)
-        //{
-        //    var msg = ex.Message;
-        //    if (ex.InnerException != null)
-        //        msg += Environment.NewLine + ex.InnerException.Message;
-        //    return BadRequest(msg);
-        //}
     }
 }

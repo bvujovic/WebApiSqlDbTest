@@ -4,8 +4,6 @@ namespace WebApiSqlDbTest
 {
     public static class Utils
     {
-
-
         public static BadRequestObjectResult Bad(this ControllerBase ctrl, Exception ex)
         {
             var msg = ex.Message;
