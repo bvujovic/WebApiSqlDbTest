@@ -6,9 +6,9 @@ namespace WebApiSqlDbTest.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; } = default!;
-        public DbSet<Member> Members { get; set; } = default!;
-        public DbSet<Group> Groups { get; set; } = default!;
-        public DbSet<Sharing> Sharings { get; set; } = default!;
+        public DbSet<Member> Member { get; set; } = default!;
+        public DbSet<Group> Group { get; set; } = default!;
+        public DbSet<Sharing> Sharing { get; set; } = default!;
         public DbSet<Target> Targets { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
