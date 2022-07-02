@@ -24,9 +24,6 @@ namespace WebApiSqlDbTest.Controllers
             try
             {
                 var res = ctx.Targets.Include(it => it.UserOwner).ToList();
-                //res.First().UserOwner.OwnedTargets = null;
-                //res.First().UserOwner.ModifiedTargets = null;
-                //res.First().UserOwner.AccessedTargets = null;
                 return Ok(res);
             }
             catch (Exception ex)
