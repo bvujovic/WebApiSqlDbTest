@@ -1,5 +1,6 @@
 ﻿using ClassLib;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace WebApiSqlDbTest.Data
 {
@@ -25,6 +26,8 @@ namespace WebApiSqlDbTest.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<User>().HasAlternateKey(c => c.Username);
 
             builder.Entity<User>().HasMany(u => u.OwnedTargets).WithOne(t => t.UserOwner);
             builder.Entity<User>().HasMany(u => u.ModifiedTargets).WithOne(t => t.UserModified);

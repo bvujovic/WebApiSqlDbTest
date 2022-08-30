@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClassLib
 {
@@ -9,7 +11,10 @@ namespace ClassLib
     {
         public int UserId { get; set; }
         public string Username { get; set; } = default!;
-        public string Password { get; set; } = default!;
+        public byte[] PasswordHash { get; set; } = default!;
+        public byte[] PasswordSalt { get; set; } = default!;
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpires { get; set; }
         public string Email { get; set; } = default!;
         public string FullName { get; set; } = default!;
         public bool IsActive { get; set; } = true;
