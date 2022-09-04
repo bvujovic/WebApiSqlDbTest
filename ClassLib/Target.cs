@@ -14,6 +14,8 @@ namespace ClassLib
         /// <summary>Naslov dokumenta ili naslov/kratak opis linka/fajla/foldera.</summary>
         public string Title { get; set; }
 
+        //TODO tip targeta, tacnije contenta: link/fajl/folder/doc
+
         /// <summary>Adresa linka/fajla/foldera ili tekst dokumenta.</summary>
         public string Content { get; set; }
 
@@ -55,16 +57,16 @@ namespace ClassLib
                 , new DateTime(2022, 06, 01), creator);
 
         public static Target CreateTarget(string title, string content, string strTags
-            , DateTime dateTime, User creator)
+            , DateTime created, User creator)
         {
             return new Target()
             {
                 Title = title,
                 Content = content,
                 StrTags = strTags,
-                CreatedDate = dateTime,
-                ModifiedDate = dateTime,
-                AccessedDate = dateTime,
+                CreatedDate = created,
+                ModifiedDate = created,
+                AccessedDate = created,
                 UserOwner = creator,
                 UserModified = creator,
                 UserAccessed = creator,

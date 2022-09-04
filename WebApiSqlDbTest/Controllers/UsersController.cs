@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using WebApiSqlDbTest.Classes;
 
 namespace WebApiSqlDbTest.Controllers
 {
@@ -28,11 +29,11 @@ namespace WebApiSqlDbTest.Controllers
         }
 
         /// <summary>Vraća sve korisnike. Dostupno samo ulogovanim korisnicima.</summary>
-        [HttpGet]
-        [Authorize]
+        [HttpGet, Authorize]
         public async Task<ActionResult<List<User>>> GetAll()
         {
-            var users = await ctx.Users.Include(it => it.OwnedTargets)
+            var users = await ctx.Users
+                //.Include(it => it.OwnedTargets)
                 .Include(it => it.MemberOf).ThenInclude(it => it.Group).ToListAsync();
             return Ok(users);
         }
@@ -103,7 +104,7 @@ namespace WebApiSqlDbTest.Controllers
             var refreshToken = new RefreshToken
             {
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                Expires = DateTime.Now.AddMinutes(12),
+                Expires = DateTime.Now.AddHours(2),
                 //B Created = DateTime.Now
             };
             return refreshToken;
@@ -112,15 +113,9 @@ namespace WebApiSqlDbTest.Controllers
         //todo [ValidateAntiForgeryToken]
         /// <summary>Uzimanje novog JWT-a ako je stari istekao, ali refresh token nije.</summary>
         [HttpPost("get-jwt")]
-        public async Task<ActionResult<string>> GetNewJWT()
+        public async Task<ActionResult<string>> GetNewJWT([FromBody] string username)
         {
-            //TODO korisnik ovde nije ulogovan pa u ident-u nema nicega. kako onda da dodjem do njegovog
-            // username-a? da mi ga ovaj posalje preko parametra?
-            if (HttpContext.User?.Identity is not ClaimsIdentity ident)
-                return Redirect("login");
-
-            var claimId = ident.Claims.FirstOrDefault(it => it.Type == ClaimTypes.NameIdentifier);
-            var user = await ctx.Users.FirstOrDefaultAsync(it => claimId != null && it.Username == claimId.Value);
+            var user = await ctx.Users.FirstOrDefaultAsync(it => it.Username == username);
             if (user != null)
             {
                 var refreshToken = Request.Cookies["refreshToken"];
@@ -128,7 +123,6 @@ namespace WebApiSqlDbTest.Controllers
                     && user.RefreshToken == refreshToken)
                     return Ok(CreateJWT(user));
             }
-
             return Unauthorized("Refresh token not accepted.");
         }
 
@@ -136,16 +130,18 @@ namespace WebApiSqlDbTest.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Username),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim(ClaimType.Id, user.UserId.ToString()),
+                //B
+                //new Claim(ClaimTypes.NameIdentifier, user.Username),
+                //new Claim(ClaimTypes.Name, user.FullName),
+                //new Claim(ClaimTypes.Email, user.Email),
+                //new Claim(ClaimTypes.Role, "User"),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JwtKeySomethingWeirdReally123"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var jwt = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(2),
+                expires: DateTime.Now.AddMinutes(10),
                 issuer: "JwtIssuer",
                 audience: "JwtAudience",
                 signingCredentials: creds);
@@ -164,6 +160,26 @@ namespace WebApiSqlDbTest.Controllers
             using var hmac = new HMACSHA512(passwordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             return computedHash.SequenceEqual(passwordHash);
+        }
+
+        /// <summary>Odjava korisnika sa sistema.</summary>
+        [HttpPost("logout"), Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            if (HttpContext.User?.Identity is not ClaimsIdentity ident)
+                return Unauthorized("ClaimsIdentity not found.");
+
+            //B
+            //var claimId = ident.Claims.FirstOrDefault(it => it.Type == ClaimTypes.NameIdentifier);
+            //var user = await ctx.Users.FirstOrDefaultAsync(it => claimId != null && it.Username == claimId.Value);
+            var user = await ctx.Users.FirstOrDefaultAsync(it => it.UserId == ident.GetId());
+            if (user == null)
+                return BadRequest();
+
+            user.RefreshTokenExpires = null;
+            user.RefreshToken = null;
+            await ctx.SaveChangesAsync();
+            return Ok();
         }
 
         /// <summary>Izmena podataka o korisniku.</summary>

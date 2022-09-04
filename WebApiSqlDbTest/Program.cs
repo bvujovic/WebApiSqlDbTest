@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using static System.Net.WebRequestMethods;
 
 const string appTitle = "EF Sqlite testing";
 const string appVersion = "v1";
@@ -54,10 +55,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            // https://stackoverflow.com/questions/52379848/asp-net-core-jwt-authentication-allows-expired-tokens
+            // https://stackoverflow.com/questions/43045035/jwt-token-authentication-expired-tokens-still-working-net-core-web-api
+            // https://stackoverflow.com/questions/47153080/clock-skew-and-tokens
+            ClockSkew = TimeSpan.Zero,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
             ValidIssuer = "JwtIssuer",
             ValidAudience = "JwtAudience",
             IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8

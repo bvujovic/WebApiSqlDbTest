@@ -1,67 +1,115 @@
 ﻿using ClassLib;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using WebApiSqlDbTest.Classes;
 using WebApiSqlDbTest.Data;
 using WebApiSqlDbTest.Data.DTOs;
 
 namespace WebApiSqlDbTest.Controllers
 {
+    /// <summary>Kontroler za rad sa grupama korisnika.</summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TargetsController : ControllerBase
     {
-        private readonly DataContext ctx;
+        private readonly DataContext db;
 
-        public TargetsController(DataContext ctx)
+        /// <summary>ctor</summary>
+        public TargetsController(DataContext db)
         {
-            this.ctx = ctx;
+            this.db = db;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Target>> Get()
+        /// <summary>Dohvatanje targeta koji pripadaju ulogovanom korisniku.</summary>
+        [HttpGet, Authorize]
+        public async Task<ActionResult<IEnumerable<TargetDto>>> GetMyTargets()
         {
             try
             {
-                var res = ctx.Targets.Include(it => it.UserOwner).ToList();
-                return Ok(res);
+                if (HttpContext.User?.Identity is not ClaimsIdentity ident)
+                    return Unauthorized("ClaimsIdentity not found.");
+                var ownerId = ident.GetId();
+                var targets = await db.Targets.Where(it => it.UserOwnerId == ownerId)
+                    .Select(it => new TargetDto
+                    {
+                        TargetId = it.TargetId,
+                        Title = it.Title,
+                        Content = it.Content,
+                        StrTags = it.StrTags,
+                        OwnerId = ownerId,
+                        CreatedDate = it.CreatedDate,
+                    }).ToListAsync();
+                return Ok(targets);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            catch (Exception ex) { return this.Bad(ex); }
         }
 
-        [HttpPost]
-        public IActionResult Post(Target t)
+        /// <summary>Kreiranje novog targeta.</summary>
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Create([FromBody] TargetDtoBase target)
         {
             try
             {
-                var owner = ctx.Users.Find(t.UserOwnerId);
-                if (owner != null)
-                {
-                    var newTarget = Target.CreateTarget(t.Title, t.Content
-                        , string.Join(", ", t.Tags), DateTime.Now, owner);
-                    ctx.Targets.Add(newTarget);
-                    ctx.SaveChanges();
-                    return Ok();
-                }
-                else
-                    return BadRequest($"User with Id {t.UserOwnerId} doesn't exists.");
+                if (HttpContext.User?.Identity is not ClaimsIdentity ident)
+                    return Unauthorized("ClaimsIdentity not found.");
+                var ownerId = ident.GetId();
+                var owner = await db.Users.FindAsync(ownerId);
+                //? provera: da li vec postoji target sa datim naslovom i contentom (za link/fajl/folder!)
+                var newTarget = Target.CreateTarget(target.Title, target.Content
+                        , target.StrTags, DateTime.Now, owner);
+                db.Targets.Add(newTarget);
+                await db.SaveChangesAsync();
+                return Ok();
             }
-            catch (Exception ex)
-            {
-                return this.Bad(ex);
-            }
+            catch (Exception ex) { return this.Bad(ex); }
         }
 
-        [HttpDelete]
-        public IActionResult Clear()
+        /// <summary>Brisanje targeta.</summary>
+        [HttpDelete, Authorize]
+        public async Task<IActionResult> Delete(int targetId)
         {
-            var targets = ctx.Targets.ToArray();
-            ctx.RemoveRange(targets);
-            ctx.SaveChanges();
-            return Ok();
+            try
+            {
+                // provera: da li target sa datim id-em postoji
+                var t = await db.Targets.FindAsync(targetId);
+                if (t == null)
+                    return NotFound($"Target id:'{targetId}' not found.");
+
+                //TODO da li se pominje u Sharings
+
+                db.Targets.Remove(t);
+                await db.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex) { return this.Bad(ex); }
+        }
+
+        /// <summary>Izmena targeta.</summary>
+        [HttpPut, Authorize]
+        public async Task<IActionResult> Update(int targetId, [FromBody] TargetDtoBase target)
+        {
+            try
+            {
+                if (HttpContext.User?.Identity is not ClaimsIdentity ident)
+                    return Unauthorized("ClaimsIdentity not found.");
+                var ownerId = ident.GetId();
+                //? var owner = await db.Users.FindAsync(ownerId);
+
+                var t = await db.Targets.FindAsync(targetId);
+                if (t == null)
+                    return NotFound($"Target id:{targetId} not found.");
+
+                t.Title = target.Title;
+                t.Content = target.Content;
+                t.StrTags = target.StrTags;
+                t.ModifiedDate = DateTime.Now;
+
+                await db.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex) { return this.Bad(ex); }
         }
     }
 }
