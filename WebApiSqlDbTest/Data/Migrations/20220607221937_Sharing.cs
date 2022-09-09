@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApiSqlDbTest.Migrations
 {
-    public partial class Sharing : Migration
+    public partial class SharingNew : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

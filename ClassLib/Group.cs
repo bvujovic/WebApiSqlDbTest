@@ -25,9 +25,7 @@ namespace ClassLib
 
         public List<Member> Members { get; set; }
 
-        //public User Administrator { get; set; }
-        //[ForeignKey(nameof(Administrator))]
-        //public int AdministratorId { get; set; }
+        public List<Sharing> Sharings { get; set; }
 
         public override string ToString()
             => Name;

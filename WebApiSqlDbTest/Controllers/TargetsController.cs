@@ -36,6 +36,7 @@ namespace WebApiSqlDbTest.Controllers
                     {
                         TargetId = it.TargetId,
                         Title = it.Title,
+                        Type = it.Type,
                         Content = it.Content,
                         StrTags = it.StrTags,
                         OwnerId = ownerId,
@@ -57,7 +58,7 @@ namespace WebApiSqlDbTest.Controllers
                 var ownerId = ident.GetId();
                 var owner = await db.Users.FindAsync(ownerId);
                 //? provera: da li vec postoji target sa datim naslovom i contentom (za link/fajl/folder!)
-                var newTarget = Target.CreateTarget(target.Title, target.Content
+                var newTarget = Target.CreateTarget(target.Title, target.Type, target.Content
                         , target.StrTags, DateTime.Now, owner);
                 db.Targets.Add(newTarget);
                 await db.SaveChangesAsync();
@@ -77,7 +78,9 @@ namespace WebApiSqlDbTest.Controllers
                 if (t == null)
                     return NotFound($"Target id:'{targetId}' not found.");
 
-                //TODO da li se pominje u Sharings
+                // brisanje datog targeta iz sharing-a
+                var sharings = await db.Sharing.Where(it => it.TargetId == targetId).ToListAsync();
+                db.Sharing.RemoveRange(sharings);
 
                 db.Targets.Remove(t);
                 await db.SaveChangesAsync();
@@ -102,6 +105,7 @@ namespace WebApiSqlDbTest.Controllers
                     return NotFound($"Target id:{targetId} not found.");
 
                 t.Title = target.Title;
+                t.Type = target.Type;
                 t.Content = target.Content;
                 t.StrTags = target.StrTags;
                 t.ModifiedDate = DateTime.Now;

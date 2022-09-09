@@ -12,7 +12,7 @@ namespace WebApiSqlDbTest.Migrations
 {
     [DbContext(typeof(DataContext))]
     [Migration("20220607221937_Sharing")]
-    partial class Sharing
+    partial class SharingNew
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

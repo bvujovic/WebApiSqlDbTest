@@ -1,6 +1,6 @@
 ﻿namespace WebApiSqlDbTest.Data.DTOs
 {
-    public class UserPublic
+    public class UserDto
     {
         public int UserId { get; set; }
         public string Username { get; set; }

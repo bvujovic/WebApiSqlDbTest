@@ -25,13 +25,13 @@ namespace WebApiSqlDbTest.Controllers
 
         /// <summary>Dohvatanje clanova grupe.</summary>
         [HttpGet, Authorize]
-        public async Task<ActionResult<List<UserPublic>>> GetGroupMembers(int groupId)
+        public async Task<ActionResult<List<UserDto>>> GetGroupMembers(int groupId)
         {
             var members = await db.Member.Where(it => it.GroupId == groupId).Select(it => it.UserId)
                 .ToListAsync();
             var users = await db.Users.Where(it => it.IsActive && members.Contains(it.UserId))
                 .ToListAsync();
-            var pubUsers = users.Select(it => new UserPublic
+            var pubUsers = users.Select(it => new UserDto
             {
                 UserId = it.UserId,
                 Username = it.Username,

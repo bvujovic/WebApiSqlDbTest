@@ -14,7 +14,8 @@ namespace ClassLib
         /// <summary>Naslov dokumenta ili naslov/kratak opis linka/fajla/foldera.</summary>
         public string Title { get; set; }
 
-        //TODO tip targeta, tacnije contenta: link/fajl/folder/doc
+        /// <summary>Tip targeta, tacnije contenta: link/fajl/folder/doc</summary>
+        public string Type { get; set; }
 
         /// <summary>Adresa linka/fajla/foldera ili tekst dokumenta.</summary>
         public string Content { get; set; }
@@ -46,22 +47,26 @@ namespace ClassLib
         [ForeignKey(nameof(UserAccessed))]
         public int UserAccessedId { get; set; }
 
+        public List<Sharing> Sharings { get; set; }
+
         public override string ToString()
             => $"{Title}";
 
         /// <summary>Inicijalni target koji se automatski dodaje kao primer za svakog korisnika.</summary>
         public static Target InitTarget(User creator)
             => CreateTarget("Tagged World GitHub page"
+                , TargetTypes.Link
                 , "https://github.com/bvujovic/TaggedWorld"
                 , "raf, tagged-world, project, c#, web-api"
                 , new DateTime(2022, 06, 01), creator);
 
-        public static Target CreateTarget(string title, string content, string strTags
+        public static Target CreateTarget(string title, string type, string content, string strTags
             , DateTime created, User creator)
         {
             return new Target()
             {
                 Title = title,
+                Type = type,
                 Content = content,
                 StrTags = strTags,
                 CreatedDate = created,

@@ -28,6 +28,7 @@ namespace WebApiSqlDbTest.Data
             base.OnModelCreating(builder);
 
             builder.Entity<User>().HasAlternateKey(c => c.Username);
+            builder.Entity<User>().HasAlternateKey(c => c.Email);
 
             builder.Entity<User>().HasMany(u => u.OwnedTargets).WithOne(t => t.UserOwner);
             builder.Entity<User>().HasMany(u => u.ModifiedTargets).WithOne(t => t.UserModified);

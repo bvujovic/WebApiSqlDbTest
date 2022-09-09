@@ -5,7 +5,8 @@
         /// <summary>Naslov dokumenta ili naslov/kratak opis linka/fajla/foldera.</summary>
         public string Title { get; set; }
 
-        //TODO tip targeta, tacnije contenta: link/fajl/folder/doc
+        /// <summary>Tip targeta, tacnije contenta: link/fajl/folder/doc</summary>
+        public string Type { get; set; }
 
         /// <summary>Adresa linka/fajla/foldera ili tekst dokumenta.</summary>
         public string Content { get; set; }

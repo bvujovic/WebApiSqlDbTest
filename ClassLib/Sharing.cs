@@ -10,6 +10,10 @@ namespace ClassLib
     {
         public DateTime SharedDate { get; set; }
 
+        public User User { get; set; }
+        [ForeignKey(nameof(User))]
+        public int UserId { get; set; }
+
         public Group Group { get; set; }
         [ForeignKey(nameof(Group))]
         public int GroupId { get; set; }

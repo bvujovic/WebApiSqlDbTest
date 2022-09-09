@@ -25,6 +25,8 @@ namespace ClassLib
         public List<Target>? ModifiedTargets { get; set; } = null;
         public List<Target>? AccessedTargets { get; set; } = null;
 
+        public List<Sharing>? Sharings { get; set; }
+
         public override string ToString()
             => $"{FullName} ({Username})";
     }
